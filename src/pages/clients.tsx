@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <div>
-      <Table data={allClients} headers={ headers } ></Table>
+      <Table title="Clientes" data={allClients} headers={ headers } ></Table>
     </div>
   )
 }

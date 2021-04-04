@@ -106,6 +106,9 @@ export default function AppBarComponent({children}){
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+    const handleCloseSideBar = ()=>{
+        setMobileOpen(false)
+    }
 
     const drawer = (
         <div>
@@ -113,7 +116,7 @@ export default function AppBarComponent({children}){
             <Divider />
             <List>
                 <Link href="/">
-                    <ListItem button classes={{ root: classes.listItem }}>
+                    <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon>
                             <img className={classes.listIcon} src="icons/order.svg" />
                             </ListItemIcon>
@@ -126,7 +129,7 @@ export default function AppBarComponent({children}){
                     </ListItem>    
                 </Link>
                 <Link href="/clients">
-                    <ListItem button classes={{ root: classes.listItem }}>
+                    <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon>
                             <img className={classes.listIcon} src="icons/clients.svg" />
                         </ListItemIcon>
@@ -139,7 +142,7 @@ export default function AppBarComponent({children}){
                     </ListItem>
                 </Link>
                 <Link href="/products">
-                    <ListItem button classes={{ root: classes.listItem }}>
+                    <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon> <img className={classes.listIcon} src="icons/product.svg" /> </ListItemIcon>
                         <ListItemText
                             classes={{

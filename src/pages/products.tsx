@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <div>
-      <Table data={allProducts} headers={ headers } ></Table>
+      <Table title="Produtos" data={allProducts} headers={ headers } ></Table>
     </div>
   )
 }

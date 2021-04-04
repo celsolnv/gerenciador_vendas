@@ -6,6 +6,8 @@ import { Client, Order, Product } from '../interfaces/api';
 import { getProfitability } from '../ruleBusiness/Order';
 import api from '../services/api';
 import DialogBox from '../components/Dialog';
+import LoadingBox from '../components/Loading';
+import {orderMessage} from '../ultis/message';
 
 const useStyles = makeStyles((theme: Theme) => ({
   autocompleteContainer: {
@@ -52,6 +54,7 @@ export default function addOrder() {
   const [product, setProduct] = useState<Product>({})
   const [client, setClient] = useState<Client>({})
 
+  const [isLoading, setIsLoading] = useState(false) 
   const [dialogBox, setDialogBox] = useState({
     "isOpen":false,
     "title":"",
@@ -59,7 +62,6 @@ export default function addOrder() {
     "handleClose":null
   })
 
-  const [valueProduct, setValueProduct] = useState(0);
   const [profitabilityProduct, setProfitabilityProduct] = useState("");
 
   const [orderForm, setOrderForm] = useState<Order>({
@@ -90,7 +92,7 @@ export default function addOrder() {
   useEffect(() => {
     const profitability = getProfitability({
       "valueItem":orderForm.price,
-      "valueProduct":valueProduct
+      "valueProduct":product.price_single
     })
     setProfitabilityProduct(profitability.message);
   
@@ -105,7 +107,6 @@ export default function addOrder() {
       [event.target.name]: event.target.value,
     });
   };
-  
   const clientSelected = (event: Object, client:Client ) => {
     if(client!=undefined){
       setClient(client);
@@ -124,31 +125,36 @@ export default function addOrder() {
   }
   const productSelected = (event: Object, product:Product) => {
     if(product!=undefined){
+      product.price_single =  parseFloat(String(product.price_single).replace(".",""));
       setProduct(product);
       setOrderForm({
         ...orderForm,id_product:product.id
       });
-      setValueProduct( parseFloat(String(product.price_single).replace(".","")) );
     }
     else{
       setProduct(null);
       setOrderForm({
         ...orderForm,id_product:null
       });
-      setValueProduct(0);
 
     }
   }
 
   const submitForm = () => {
-    console.log('enviando')
-    console.log(orderForm);
+    setIsLoading(true);
     api.post("orders", orderForm).then( (response)=>{
+      setIsLoading(false);
       console.log(response);
       if (response.status==201){
-
+          const message = orderMessage({"status":true})
+          setDialogBox({
+            ...dialogBox,
+            description:message.description,
+            title       : message.title,
+            isOpen : true
+          })
       }
-    } )
+    })
   }
 
 
@@ -232,7 +238,12 @@ export default function addOrder() {
 
         </div>
       </div>
-      {/* <DialogBox title= /> */}
+      <DialogBox 
+        title={dialogBox.title}
+        description={dialogBox.description}
+        isOpen={dialogBox.isOpen}
+        handleClose={(e)=>setDialogBox( {...dialogBox,isOpen:false} ) }  />
+      <LoadingBox isOpen={isLoading} />
     </div>
   )
 }
