@@ -1,13 +1,12 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Table from '../components/Table';
-
+import api from '../services/api'
 export default function Home() {
   const [allClients, setAllClients] = useState([{}]);
   const headers = ["Id","Nome"]; 
   useEffect(()=>{
-      axios.get(
-          "http://localhost:3333/clients"
+      api.get(
+          "clients"
         ).then((response)=>{
           setAllClients(response.data);
         });
