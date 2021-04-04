@@ -1,4 +1,4 @@
-import { AppBar, createStyles, Divider, Drawer, Hidden, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles, Toolbar, Typography, useTheme } from "@material-ui/core";
+import { AppBar, createStyles, Divider, Drawer, Hidden, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Toolbar, Typography, useTheme } from "@material-ui/core";
 import { Menu } from '@material-ui/icons';
 import { useState } from "react";
 import Link from './Link';
@@ -115,6 +115,7 @@ export default function AppBarComponent({children}){
             <div className={classes.toolbar} />
             <Divider />
             <List>
+                {/* @ts-ignore */}
                 <Link href="/">
                     <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon>
@@ -128,6 +129,7 @@ export default function AppBarComponent({children}){
                         />
                     </ListItem>    
                 </Link>
+                {/* @ts-ignore */}
                 <Link href="/clients">
                     <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon>
@@ -141,6 +143,7 @@ export default function AppBarComponent({children}){
                         />
                     </ListItem>
                 </Link>
+                {/* @ts-ignore */}
                 <Link href="/products">
                     <ListItem onClick={handleCloseSideBar} button classes={{ root: classes.listItem }}>
                         <ListItemIcon> <img className={classes.listIcon} src="icons/product.svg" /> </ListItemIcon>

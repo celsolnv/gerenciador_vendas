@@ -22,6 +22,7 @@ export default function Home() {
   
   return (
     <div>
+      {/* @ts-ignore */}
       <Link href="/addOrder">
         <Button startIcon={<AddIcon/>} 
           variant="contained" color="primary">

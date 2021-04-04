@@ -51,8 +51,16 @@ export default function addOrder() {
   const [allClients, setAllClients] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
 
-  const [product, setProduct] = useState<Product>({})
-  const [client, setClient] = useState<Client>({})
+  const [product, setProduct] = useState<Product>({
+    id:null,
+    name:"",
+    multiple:null,
+    price_single:null
+  })
+  const [client, setClient] = useState<Client>({
+    id:null,
+    name:""
+  })
 
   const [isLoading, setIsLoading] = useState(false) 
   const [dialogBox, setDialogBox] = useState({
@@ -144,7 +152,6 @@ export default function addOrder() {
     setIsLoading(true);
     api.post("orders", orderForm).then( (response)=>{
       setIsLoading(false);
-      console.log(response);
       if (response.status==201){
           const message = orderMessage({"status":true})
           setDialogBox({
@@ -164,8 +171,8 @@ export default function addOrder() {
      <div className={classes.formContainer}>
         {/* nome do cliente */}
         <Autocomplete
-          options={allClients}
           getOptionLabel={(option:Client) => option.name}
+          options={allClients}
           id="client-name"
           value={client}
           onChange={clientSelected}
