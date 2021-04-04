@@ -24,7 +24,7 @@ export default function BasicTable({headers,data}) {
              {keys.map(key =><TableCell key={key}> {record[key]} </TableCell>) } 
         </TableRow>
     )
-}
+  }
 
   const classes = useStyles();
 
@@ -33,7 +33,7 @@ export default function BasicTable({headers,data}) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            {headers.map( (header:string) => <TableCell key={header}> {header} </TableCell>)}
+            {headers.map( (header:string) => <TableCell key={header.toString()}> {header} </TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>

@@ -1,33 +1,33 @@
-import Document,{Html,Head,Main,NextScript, DocumentContext} from 'next/document';
 import React from 'react';
+import Document,{Html,Head,Main,NextScript, DocumentContext} from 'next/document';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import theme from '../../lib/theme';
+
 export default class MyDocument extends Document{
     // static async getInitialProps(ctx: DocumentContext) {
     //     const initialProps = await Document.getInitialProps(ctx)
     
     //     return initialProps
     //   }      
-      render() {
-        return (
-          <Html lang="en">
-            <Head>
+  render() {
+    return (
+      <Html lang="pt">
+        <Head>
 
-              {/* PWA primary color */}
-              <meta name="theme-color" content={theme.palette.primary.main} />
-              <link
-                rel="stylesheet"
-                href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-              />
-            </Head>
-            <body></body>
-              <Main />
-              <NextScript />
-            </body>
-          </Html>
-        );
-      
-    }
+          {/* PWA primary color */}
+          <meta name="theme-color" content={theme.palette.primary.main} />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
 }
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),

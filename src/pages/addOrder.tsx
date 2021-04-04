@@ -2,8 +2,10 @@ import { Button, makeStyles, TextField, Theme } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useEffect, useState } from "react";
 import NumberFormat from '../components/NumberFormat';
-import { allClients, allProducts, Client, Order, Product } from '../interfaces/api';
+import { Client, Order, Product } from '../interfaces/api';
+import { getProfitability } from '../ruleBusiness/Order';
 import api from '../services/api';
+import DialogBox from '../components/Dialog';
 
 const useStyles = makeStyles((theme: Theme) => ({
   autocompleteContainer: {
@@ -42,14 +44,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 
 export default function addOrder() {
-  const [allClients, setAllClients] = useState<allClients>([]);
-  const [allProducts, setAllProducts] = useState<allProducts>([]);
+  const classes = useStyles();
 
-  const [product, setProduct] = useState(null)
-  const [client, setClient] = useState(null)
+  const [allClients, setAllClients] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+
+  const [product, setProduct] = useState<Product>({})
+  const [client, setClient] = useState<Client>({})
+
+  const [dialogBox, setDialogBox] = useState({
+    "isOpen":false,
+    "title":"",
+    "description":"",
+    "handleClose":null
+  })
 
   const [valueProduct, setValueProduct] = useState(0);
   const [profitabilityProduct, setProfitabilityProduct] = useState("");
+
   const [orderForm, setOrderForm] = useState<Order>({
     "id_client": null,
     "id_product": null,
@@ -57,7 +69,7 @@ export default function addOrder() {
     "quantity": 1
   });
 
-  const classes = useStyles();
+  // Carregando os clientes e produtos do banco de dados
   useEffect(() => {
     api.get(
       "clients"
@@ -74,55 +86,76 @@ export default function addOrder() {
     });
 
   }, [])
+  // Gerando atualização do campo de rentabilidade conforme o valor do item é alterado
   useEffect(() => {
-    console.log("Mudando preço");
-    const diff = parseFloat(String(valueProduct).replace('.','')) - parseFloat(orderForm.price);
-    // const diff = orderForm.price - valueProduct;
-    console.log(parseFloat(String(valueProduct).replace('.','')))
-    if (diff>0){
-      setProfitabilityProduct("Boa");
-    }
-
+    const profitability = getProfitability({
+      "valueItem":orderForm.price,
+      "valueProduct":valueProduct
+    })
+    setProfitabilityProduct(profitability.message);
+  
   }, [orderForm.price])
 
-  const handlePrice = (event:React.ChangeEvent<HTMLInputElement>) =>{
-    orderForm.price = parseFloat(event.target.value);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(orderForm);
+    console.log(event.target.value);
     setOrderForm({
       ...orderForm,
-      ["price"]:parseFloat(event.target.value),  
+      [event.target.name]: event.target.value,
     });
-  }
-  const handleQuantity = (event:React.ChangeEvent<HTMLInputElement>) =>{
-    orderForm.quantity = parseInt(event.target.value);
-  }
+  };
+  
   const clientSelected = (event: Object, client:Client ) => {
-    setClient(client);
-    setOrderForm({
-      ...orderForm,
-      id_client: client.id,
-    });
+    if(client!=undefined){
+      setClient(client);
+      setOrderForm({
+        ...orderForm,
+        id_client: client.id,
+      });
+    }
+    else{
+      setClient(null);
+      setOrderForm({
+        ...orderForm,
+        id_client: null,
+      });
+    }
   }
   const productSelected = (event: Object, product:Product) => {
-    setProduct(product);
-    setOrderForm({
-      ...orderForm,id_product:product.id
-    });
-    setValueProduct(product.price_single);
+    if(product!=undefined){
+      setProduct(product);
+      setOrderForm({
+        ...orderForm,id_product:product.id
+      });
+      setValueProduct( parseFloat(String(product.price_single).replace(".","")) );
+    }
+    else{
+      setProduct(null);
+      setOrderForm({
+        ...orderForm,id_product:null
+      });
+      setValueProduct(0);
+
+    }
   }
 
   const submitForm = () => {
     console.log('enviando')
     console.log(orderForm);
-    // api.post("orders", orderForm).then( (response)=>{
-    //   console.log(response);
-    // } )
+    api.post("orders", orderForm).then( (response)=>{
+      console.log(response);
+      if (response.status==201){
+
+      }
+    } )
   }
 
 
-  const Form = () => {
-
-    return (
-      <div className={classes.formContainer}>
+  return (
+    <div>
+           
+     <div className={classes.formContainer}>
         {/* nome do cliente */}
         <Autocomplete
           options={allClients}
@@ -154,7 +187,7 @@ export default function addOrder() {
             variant="outlined"
             name="price"
             value={orderForm.price}
-            onChange={handlePrice}
+            onChange={handleChange}
             InputProps={{
               inputComponent: NumberFormat as any,
             }}
@@ -166,29 +199,24 @@ export default function addOrder() {
             label="Quantidade"
             name="quantity"
             value={orderForm.quantity}
-            onChange={handleQuantity}
+            onChange={handleChange}
             variant="outlined"
             className={classes.inputContainer}
+            type="number"
           />
         </div>
         
         {/* Valor unitário do produto (Vem do banco de dados)*/}
-        <TextField
-          disabled
-          id="value_product"
-          label="Valor unitário do produto"
-          value={valueProduct}
-          variant="outlined"
-          className={classes.inputContainer}
+        <TextField disabled id="value_product" label="Valor unitário do produto"
+          value={product.price_single} variant="outlined" className={classes.inputContainer}
+          InputProps={{
+            inputComponent: NumberFormat as any,
+          }}
         />
         {/* Rentabilidade do pedido */}
-        <TextField
-          disabled
-          id="outlined-disabled"
-          label="Rentabilidade"
-          value = {profitabilityProduct}
-          variant="outlined"
-          className={classes.inputContainer}
+        <TextField disabled id="outlined-disabled"
+          label="Rentabilidade" value = {profitabilityProduct}
+          variant="outlined" className={classes.inputContainer}
         />
 
         <div className={classes.groupButton}>
@@ -204,12 +232,7 @@ export default function addOrder() {
 
         </div>
       </div>
-    )
-  }
-
-  return (
-    <div>
-      <Form></Form>
+      {/* <DialogBox title= /> */}
     </div>
   )
 }

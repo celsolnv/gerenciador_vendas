@@ -1,11 +1,9 @@
-import { Button, Link, TextField } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Link from '../components/Link';
 import Table from '../components/Table';
-import AddIcon from '@material-ui/icons/Add';
-import Modal from '../components/Modal';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 export default function Home() {
   const [allOrders, setAllOrders] = useState([{}]);
   const headers = ["Id","Nome do produto","Valor unitário","Múltiplo"]; 

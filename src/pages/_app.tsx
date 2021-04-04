@@ -1,11 +1,12 @@
-import Layout from '../components/Layout';
-import {CssBaseline} from '@material-ui/core'
-import  Head  from 'next/head';
-import { AppProps } from 'next/dist/next-server/lib/router/router';
 import React from 'react';
 import PropTypes from 'prop-types';
+import  Head  from 'next/head';
+import {ThemeProvider} from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import theme from '../../lib/theme';
+import Layout from '../components/Layout';
 
-function MyApp(props: AppProps) {
+export default function MyApp(props) {
   const { Component, pageProps } = props;
 
   React.useEffect(() => {
@@ -19,17 +20,15 @@ function MyApp(props: AppProps) {
   return (
     <>
       <Head>
-          <meta name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
-            key="Viewport"
-          />
           <title>Gerenciador de vendas</title>
+          <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
-      <Layout>
-        <CssBaseline/>
-        <Component {...pageProps} />
-      </Layout>
-    
+      <ThemeProvider theme={theme}>
+        <Layout>
+          <CssBaseline/>
+          <Component {...pageProps} />
+        </Layout>
+      </ThemeProvider>
     </>
   )
 }
@@ -39,4 +38,3 @@ MyApp.propTypes = {
   pageProps: PropTypes.object.isRequired,
 };
 
-export default MyApp
