@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function BasicTable({headers,data,title,hasActions}) {
+export default function BasicTable({headers,data,title,hasActions=false}) {
   const classes = useStyles();
   const Row = ( {record} )=>{
     const keys = Object.keys(record);
