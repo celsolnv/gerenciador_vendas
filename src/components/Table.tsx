@@ -9,7 +9,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
 import { allOrders } from '../interfaces/api';
-
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -19,13 +20,21 @@ const useStyles = makeStyles({
   }
 });
 
-export default function BasicTable({headers,data,title}) {
+export default function BasicTable({headers,data,title,hasActions}) {
 
-  const Row = ( {record},props )=>{
+  const Row = ( {record} )=>{
     const keys = Object.keys(record);
     return(
         <TableRow>
              {keys.map(field =><TableCell key={record.id+field}> {record[field]} </TableCell>) } 
+             {hasActions ? 
+               <TableCell>
+                  {<EditIcon/>}
+                  {<DeleteIcon/>}
+               </TableCell>
+               :
+               null
+            }
         </TableRow>
     )
   }

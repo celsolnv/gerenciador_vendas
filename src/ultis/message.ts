@@ -1,7 +1,7 @@
 interface messageOrderInput{
     status:boolean
 }
-interface messageOrderOutput{
+export interface messageOrderOutput{
     status:boolean,
     description:string,
     title:string

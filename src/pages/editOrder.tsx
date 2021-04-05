@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
 import { Button, makeStyles, TextField, Theme } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import NumberFormat from '../components/NumberFormat';
+import { useEffect, useState } from "react";
 import DialogBox from '../components/Dialog';
-import LoadingBox from '../components/Loading';
 import Link from '../components/Link';
-
-import { SimpleDialogBox } from '../interfaces/generic';
+import LoadingBox from '../components/Loading';
+import NumberFormat from '../components/NumberFormat';
 import { Client, Order, Product } from '../interfaces/api';
-import api from '../services/api';
+import { SimpleDialogBox } from '../interfaces/generic';
 import { getProfitability, validOrder } from '../ruleBusiness/Order';
-import { orderMessage, messageOrderOutput } from '../ultis/message';
-import { keys } from "@material-ui/core/styles/createBreakpoints";
+import api from '../services/api';
+import { orderMessage } from '../ultis/message';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   autocompleteContainer: {
@@ -296,6 +295,10 @@ return (
           variant="contained" color="primary"
           onClick={submitForm}
         > Adicionar pedido </Button>
+        <Button className={classes.btnSubmit}
+          variant="contained" color="primary"
+          onClick={clearFields}
+        > Limpar </Button>
       </div>
     </div>
 

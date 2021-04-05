@@ -9,7 +9,7 @@ import api from '../services/api'
 
 export default function Home() {
   const [allOrders, setAllOrders] = useState<allOrders>([]);
-  const headers = ["Id","Nome do produto","Cliente","Quantidade","Valor total"]; 
+  const headers = ["Id","Nome do produto","Cliente","Quantidade","Valor total","Ações"]; 
   useEffect(()=>{
       api.get(
           "orders"
@@ -23,13 +23,13 @@ export default function Home() {
   return (
     <div>
       {/* @ts-ignore */}
-      <Link href="/addOrder">
+      <Link href="/orders/addOrder">
         <Button startIcon={<AddIcon/>} 
           variant="contained" color="primary">
           Novo pedido
         </Button>
       </Link>
-      <Table title="Pedidos" data={allOrders} headers={ headers } ></Table>
+      <Table title="Pedidos" data={allOrders} headers={ headers } hasActions={true} ></Table>
     </div>
   )
 }
