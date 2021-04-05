@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 
-export default function addOrder() {
+export default function editOrder() {
   const classes = useStyles();
 
   const [allClients, setAllClients] = useState([]);
@@ -75,30 +75,39 @@ export default function addOrder() {
 
   const [profitabilityProduct, setProfitabilityProduct] = useState("");
 
-  const [orderForm, setOrderForm] = useState<Order>({
+  const [orderForm, setOrderForm] = useState({
     "id_client": null,
     "id_product": null,
     "price": null,
-    "quantity": 1
+    "quantity": 1,
+    "id":null
   });
 
   // Carregando os clientes e produtos do banco de dados
   useEffect(() => {
+    
+    const url = new URL(window.location.href);
+    const order_id = parseInt(url.searchParams.get("id"));
+    api.get(
+        `orders/${order_id}`
+      ).then((response) => {
+        clientSelected(null,response.data[0].client);
+        productSelected(null,response.data[0].product);
+        setOrderForm({...response.data[0].order,id:order_id});
+      });
     api.get(
       "clients"
     ).then((response) => {
       setAllClients(response.data);
     });
-
-  }, [])
-  useEffect(() => {
     api.get(
-      "products"
-    ).then((response) => {
-      setAllProducts(response.data);
+        "products"
+      ).then((response) => {
+        setAllProducts(response.data);
     });
 
   }, [])
+
   // Gerando atualização do campo de rentabilidade conforme o valor do item é alterado
   useEffect(() => {
     const profitability = getProfitability({
@@ -111,8 +120,6 @@ export default function addOrder() {
 
   // Salva os valores digitados no objeto orderForm (usado para os campos mais genéricos)
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(orderForm);
-    console.log(event.target.value);
     setOrderForm({
       ...orderForm,
       [event.target.name]: event.target.value,
@@ -151,69 +158,72 @@ export default function addOrder() {
     }
   }
 
-  const submitForm = () => {
-    const checkForm = checkRequiredFields();
-    if (!checkForm.status){
-      showDialog({
-        title: "Preencha todos os campos!",
-        description: checkForm.message
-      })
-      return;
-    }
-    const checkOrder = validOrder(orderForm, product);
-    if (!checkOrder.status) {
-      showDialog({
-        title: "Não foi possível enviar o pedido",
-        description: checkOrder.message
-      })
-      return;
-    }
-    setIsLoading(true);
-    api.post("orders", orderForm).then((response) => {
-      setIsLoading(false);
-      if (response.status == 201) {
-        const message = orderMessage({ "status": true })
-        showDialog(message);
-        clearFields();
-      }
-      else {
-        const message = orderMessage({ "status": false })
-        showDialog(message);
-      }
+    const submitForm = () => {
+        const checkForm = checkRequiredFields();
+        if (!checkForm.status){
+            showDialog({
+            title: "Preencha todos os campos!",
+            description: checkForm.message
+            })
+            return;
+        }
+        const checkOrder = validOrder(orderForm, product);
+        if (!checkOrder.status) {
+            showDialog({
+            title: "Não foi possível enviar o pedido",
+            description: checkOrder.message
+            })
+            return;
+        }
+        setIsLoading(true);
+        api.put("orders", orderForm).then((response) => {
+            setIsLoading(false);
+            if (response.status == 201) {
+                const message = orderMessage({ "status": true })
+                showDialog(message);
+                clearFields();
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 3000);
+            }
+            else {
+                const message = orderMessage({ "status": false })
+                showDialog(message);
+            }
+        }).catch(e => console.log(e));
+        setIsLoading(false);
+    }       
+
+    const checkRequiredFields = () => {
+    const result = {"message":null,"status":true};
+    const keys_orders = Object.keys(orderForm);
+    keys_orders.map((key)=>{
+        if (orderForm[key] == null || orderForm[key] == undefined || orderForm[key] == NaN || orderForm[key] == "" ){
+        result.message = `Todos os campos devem ser preenchidos para 
+                            que o pedido seja realizado!`;
+        result.status = false;
+        return result;
+        }
     })
-  }
+    return result;
 
-const checkRequiredFields = () => {
-  const result = {"message":null,"status":true};
-  const keys_orders = Object.keys(orderForm);
-  keys_orders.map((key)=>{
-    if (orderForm[key] == null || orderForm[key] == undefined || orderForm[key] == NaN || orderForm[key] == "" ){
-      result.message = `Todos os campos devem ser preenchidos para 
-                        que o pedido seja realizado!`;
-      result.status = false;
-      return result;
     }
-  })
-  console.log(result);
-  return result;
+    const clearFields = () => {
+    // Usa-se NaN para os campos com valores numéricos (null não funciona)
+    setOrderForm({...orderForm, id_client: NaN, id_product: NaN, price: NaN, quantity: 1 });
+    setProduct({ id: NaN, multiple: NaN, name: "", price_single: NaN });
+    setClient({ id: NaN, name: "" });
 
-}
-const clearFields = () => {
-  // Usa-se NaN para os campos com valores numéricos (null não funciona)
-  setOrderForm({ id_client: NaN, id_product: NaN, price: NaN, quantity: 1 });
-  setProduct({ id: NaN, multiple: NaN, name: "", price_single: NaN });
-  setClient({ id: NaN, name: "" });
-
-}
-// O tipo da mensagem é o mesmo do retorno da função orderMessage
-const showDialog = (dialog: SimpleDialogBox) => {
-  setDialogBox({
-    ...dialogBox,
-    description: dialog.description,
-    title: dialog.title,
-    isOpen: true
-  })
-}
+    }
+    // O tipo da mensagem é o mesmo do retorno da função orderMessage
+    const showDialog = (dialog: SimpleDialogBox) => {
+    setDialogBox({
+        ...dialogBox,
+        description: dialog.description,
+        title: dialog.title,
+        isOpen: true
+    })
+    }
 
 return (
   <div>
@@ -294,11 +304,7 @@ return (
         <Button className={classes.btnSubmit}
           variant="contained" color="primary"
           onClick={submitForm}
-        > Adicionar pedido </Button>
-        <Button className={classes.btnSubmit}
-          variant="contained" color="primary"
-          onClick={clearFields}
-        > Limpar </Button>
+        > Atualizar pedido </Button>
       </div>
     </div>
 

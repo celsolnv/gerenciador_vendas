@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div>
       {/* @ts-ignore */}
-      <Link href="/orders/addOrder">
+      <Link href="/addOrder">
         <Button startIcon={<AddIcon/>} 
           variant="contained" color="primary">
           Novo pedido

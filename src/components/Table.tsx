@@ -11,26 +11,39 @@ import React from 'react';
 import { allOrders } from '../interfaces/api';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Link from './Link';
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
+    textAlign:'center',
   },
   title:{
     textAlign:'center',
+  },
+  icon:{
+    padding:'1rem',
   }
 });
 
 export default function BasicTable({headers,data,title,hasActions}) {
-
+  const classes = useStyles();
   const Row = ( {record} )=>{
     const keys = Object.keys(record);
     return(
         <TableRow>
-             {keys.map(field =><TableCell key={record.id+field}> {record[field]} </TableCell>) } 
+             {keys.map(field =><TableCell align="center" key={record.id+field}> {record[field]} </TableCell>) } 
              {hasActions ? 
-               <TableCell>
-                  {<EditIcon/>}
-                  {<DeleteIcon/>}
+               <TableCell align="center">
+                  
+                   {/* @ts-ignore */}
+                    <Link className={classes.icon} href={`/editOrder?id=${record.id}`}>
+                      <EditIcon  />
+                    </Link>
+                  
+                  {/* @ts-ignore */}
+                  <Link className={classes.icon} href={`/delOrder?id=${record.id}`}>
+                    <DeleteIcon  />
+                  </Link>
                </TableCell>
                :
                null
@@ -39,7 +52,6 @@ export default function BasicTable({headers,data,title,hasActions}) {
     )
   }
 
-  const classes = useStyles();
 
   return (
     <TableContainer component={Paper}>
@@ -47,7 +59,7 @@ export default function BasicTable({headers,data,title,hasActions}) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            {headers.map( (header:string) => <TableCell key={header.toString()}> {header} </TableCell>)}
+            {headers.map( (header:string) => <TableCell align="center" key={header.toString()}> {header} </TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>
